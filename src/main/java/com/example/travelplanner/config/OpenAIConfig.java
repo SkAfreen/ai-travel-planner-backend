@@ -1,19 +1,23 @@
 package com.example.travelplanner.config;
 
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.openai.client.OpenAIClient;
 import com.openai.client.okhttp.OpenAIOkHttpClient;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class OpenAIConfig {
 
     @Bean
-    public OpenAIClient openAIClient() {
+    public OpenAIClient openAIClient(
+            @Value("${OPENAI_API_KEY}") String apiKey) {
 
-        return OpenAIOkHttpClient.fromEnv();
+        return OpenAIOkHttpClient.builder()
+                .apiKey(apiKey)
+                .build();
     }
 
     @Bean
