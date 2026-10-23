@@ -120,27 +120,33 @@ public class AIItineraryService {
                     = "No additional travel preferences provided.";
         }
 
-        // 5. Find destination
-        Destination destination = destinationRepository
-                .findByName(trip.getDestination())
-                .orElseThrow(()
-                        -> new ResourceNotFoundException(
-                                "Destination not found"));
+        // 5. Get destination directly from the trip
+        String destinationName = trip.getDestination();
 
-        // 6. Get activities stored for destination
-        List<Activity> activities
-                = activityRepository.findByDestinationId(
-                        destination.getId());
+        if (destinationName == null || destinationName.isBlank()) {
+            throw new IllegalArgumentException(
+                    "Trip destination cannot be empty"
+            );
+        }
 
-        // 7. Convert Activity objects into readable text
+        // 6. Find optional destination details from the catalogue
+        List<Activity> activities = destinationRepository
+                .findByName(destinationName)
+                .map(destination
+                        -> activityRepository.findByDestinationId(
+                                destination.getId()
+                        )
+                )
+                .orElseGet(List::of);
+
+        // 7. Convert available activities into readable text
         String availableActivities = activities.stream()
                 .map(activity
                         -> "Activity: " + activity.getName()
                         + "\nCategory: " + activity.getCategory()
-                        + "\nDescription: "
-                        + activity.getDescription()
-                        + "\nEstimated Cost: "
-                        + activity.getEstimatedCost())
+                        + "\nDescription: " + activity.getDescription()
+                        + "\nEstimated Cost: " + activity.getEstimatedCost()
+                )
                 .collect(Collectors.joining("\n\n"));
 
         // 8. Build AI prompt
