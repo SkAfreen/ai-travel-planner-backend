@@ -16,8 +16,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    private static final Logger logger =
-            LoggerFactory.getLogger(GlobalExceptionHandler.class);
+    private static final Logger logger
+            = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
     // 404 - Resource not found
     @ExceptionHandler(ResourceNotFoundException.class)
@@ -58,8 +58,8 @@ public class GlobalExceptionHandler {
 
         exception.getBindingResult()
                 .getFieldErrors()
-                .forEach(error ->
-                        errors.put(
+                .forEach(error
+                        -> errors.put(
                                 error.getField(),
                                 error.getDefaultMessage()
                         ));
@@ -89,6 +89,16 @@ public class GlobalExceptionHandler {
         return ResponseEntity
                 .status(HttpStatus.BAD_GATEWAY)
                 .body("Unable to generate itinerary. Please try again.");
+    }
+
+// 401 - Invalid login credentials
+    @ExceptionHandler(InvalidCredentialsException.class)
+    public ResponseEntity<Map<String, String>> handleInvalidCredentials(
+            InvalidCredentialsException exception) {
+
+        return ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED)
+                .body(Map.of("error", exception.getMessage()));
     }
 
     // 500 - Unexpected server errors

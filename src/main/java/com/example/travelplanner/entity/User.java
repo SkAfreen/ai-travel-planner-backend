@@ -1,10 +1,12 @@
 package com.example.travelplanner.entity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+
 
 @Entity
 @Table(name = "users")
@@ -17,6 +19,9 @@ public class User {
     private String name;
 
     private String email;
+
+    @Column(name = "email_verified", nullable = false)
+    private boolean emailVerified = false;
 
     private String password;
 
@@ -73,5 +78,13 @@ public class User {
 
     public void setPreferredCurrency(String preferredCurrency) {
         this.preferredCurrency = preferredCurrency;
+    }
+
+    public boolean isEmailVerified() {
+        return emailVerified;
+    }
+
+    public void setEmailVerified(boolean emailVerified) {
+        this.emailVerified = emailVerified;
     }
 }

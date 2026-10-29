@@ -10,19 +10,27 @@ import com.example.travelplanner.dto.UserResponseDTO;
 import com.example.travelplanner.entity.User;
 import com.example.travelplanner.exception.ConflictException;
 import com.example.travelplanner.repository.UserRepository;
+import com.example.travelplanner.service.EmailVerificationService;
+import com.example.travelplanner.service.EmailService;
 
 @Service
 public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final EmailVerificationService emailVerificationService;
+    private final EmailService emailService;
 
     public UserService(
             UserRepository userRepository,
-            PasswordEncoder passwordEncoder) {
+            PasswordEncoder passwordEncoder,
+            EmailVerificationService emailVerificationService,
+            EmailService emailService) {
 
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.emailVerificationService = emailVerificationService;
+        this.emailService = emailService;
     }
 
     public UserResponseDTO createUser(UserRequestDTO request) {
@@ -42,7 +50,21 @@ public class UserService {
         user.setCountry(request.getCountry());
         user.setPreferredCurrency(request.getPreferredCurrency());
 
+// New users must verify their email addresses
+        user.setEmailVerified(false);
+
+// Save the user
         User savedUser = userRepository.save(user);
+
+// Generate a secure verification token
+        String verificationToken
+                = emailVerificationService.generateVerificationToken(savedUser);
+
+// Send verification email through Brevo
+        emailService.sendVerificationEmail(
+                savedUser.getEmail(),
+                verificationToken
+        );
 
         return new UserResponseDTO(
                 savedUser.getId(),

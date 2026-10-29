@@ -3,6 +3,7 @@ package com.example.travelplanner.dto;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.Pattern;
 
 public class UserRequestDTO {
 
@@ -14,8 +15,16 @@ public class UserRequestDTO {
     private String email;
 
     @NotBlank(message = "Password is required")
-    @Size(min = 8, message = "Password must contain at least 8 characters")
-    private String password;
+    @Size(
+    min = 8,
+    max = 128,
+    message = "Password must contain between 8 and 128 characters"
+)
+@Pattern(
+    regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^A-Za-z0-9]).{8,128}$",
+    message = "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character"
+)
+private String password;
 
     @NotBlank(message = "Country is required")
     private String country;

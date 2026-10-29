@@ -92,11 +92,17 @@ public class AIItineraryService {
                 trip.getEndDate()
         ) + 1;
 
-        // 4. Find user's travel preferences
-        TravelPreference preference
-                = travelPreferenceRepository
-                        .findByUserId(user.getId())
-                        .orElse(null);
+// Prevent excessively long AI itinerary requests
+        if (numberOfDays < 1 || numberOfDays > 30) {
+            throw new IllegalArgumentException(
+                    "AI itinerary generation supports trips between 1 and 30 days"
+            );
+        }
+
+// 4. Find user's travel preferences
+        TravelPreference preference = travelPreferenceRepository
+                .findByUserId(user.getId())
+                .orElse(null);
 
         String preferenceDetails;
 

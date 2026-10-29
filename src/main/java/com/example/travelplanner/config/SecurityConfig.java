@@ -18,7 +18,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import java.util.List;
 
 @Configuration
-public class SecurityConfig {   
+public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     @Value("${app.frontend.url:http://localhost:3000}")
@@ -76,6 +76,11 @@ public class SecurityConfig {
                                 HttpMethod.POST,
                                 "/api/auth/login"
                         ).permitAll()
+                        // Public email verification
+                        .requestMatchers(
+                                HttpMethod.GET,
+                                "/api/auth/verify-email"
+                        ).permitAll()
                         // Allow Spring Boot error handling
                         .requestMatchers("/error").permitAll()
                         // Everything else requires authentication
@@ -97,8 +102,8 @@ public class SecurityConfig {
 
         // React / Next.js development server
         configuration.setAllowedOrigins(
-        List.of(frontendUrl)
-);
+                List.of(frontendUrl)
+        );
 
         configuration.setAllowedMethods(
                 List.of("GET", "POST", "PUT", "DELETE", "OPTIONS")
